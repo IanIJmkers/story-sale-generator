@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Denna’s Trading — Story sale</title>
+<link rel="stylesheet" href="css/system.css">
+<link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <span class="mark">Denna’s Trading</span>
+    <span class="tab on">Story sale</span>
+    <span class="spacer"></span>
+    <span class="seg" title="Formaat">
+      <button class="btn" data-format="story">9:16</button>
+      <button class="btn" data-format="post">4:5</button>
+    </span>
+    <span class="sep"></span>
+    <button class="btn" id="preview">Voorbeeld</button>
+    <span class="sep"></span>
+    <button class="btn primary" id="png">PNG downloaden</button>
+    <button class="btn" id="png2x" title="Dubbele resolutie (2160 × 3840) — scherper op Instagram">PNG HD (2×)</button>
+    <button class="btn" id="pdf">PDF / print</button>
+    <span class="sep"></span>
+    <button class="btn" id="save">Opslaan</button>
+    <button class="btn" id="open">Openen</button>
+    <button class="btn" id="share">Deel link</button>
+    <button class="btn" id="reset">Herstel</button>
+  </header>
+  <div class="main">
+    <div class="stage"><div class="stage-inner"><div class="page"></div></div></div>
+    <aside class="panel" id="panel"></aside>
+  </div>
+</div>
+
+<script src="js/vendor/html-to-image.min.js"></script>
+<script src="js/brand.js"></script>
+<script src="js/sale-store.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/sale-card.js"></script>
+<script src="js/sale-panel.js"></script>
+<script src="js/storysale.js"></script>
+<script>
+  /* The story-sale store registers itself as `Store`, so the shared
+     editor runtime — toolbar, in-place editing, export — drives this
+     artboard exactly as it drives the agenda's. */
+  SalePanel.init({ mount: '#panel' });
+  StorySale.init();
+  Editor.wireBar({
+    filename: 'dennas-story-sale.png',
+    jsonName: 'dennas-story-sale.json',
+    resetText: 'Alles terugzetten naar de goedgekeurde story? Je eigen foto’s en wijzigingen gaan verloren.',
+    shareNote: 'De link bevat de tekst, kleuren en indeling — niet de foto’s. Gebruik Opslaan voor een bestand mét foto’s.',
+    onData: function () { StorySale.render(); }
+  });
+</script>
+</body>
+</html>
