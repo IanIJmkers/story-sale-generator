@@ -13,12 +13,12 @@
      terms   the label / value rows under the lead
 
    IMAGES ARE STORED AS DATA URLS. There is no server, so a chosen
-   photo has nowhere else to live. Every upload is resampled to at
-   most 1200px on its long side and re-encoded as JPEG before it is
-   kept: a 12-megapixel phone photo is 4 MB and would blow the
-   browser's 5 MB store on the second card; at 1200px a card is
-   ~150 KB and five of them fit with room to spare. 1200px is also
-   more than the 2x export ever asks of a card, so nothing is lost.
+   photo has nowhere else to live. Every upload is cut to the card's
+   proportion and resampled to 945 x 1320 before it is kept: a
+   12-megapixel phone photo is 4 MB and would blow the browser's
+   5 MB store on the second card; at 945 x 1320 a card is ~200 KB
+   and five fit. 1320 tall is more than the 2x export asks of a
+   card (~1000), so nothing is lost.
 
    THE SHARE LINK CARRIES EVERYTHING BUT THE PICTURES. A link with
    three photos in it is half a megabyte and no messenger will pass
@@ -29,7 +29,7 @@
   'use strict';
 
   var KEY = 'dennas.storysale.v1';
-  var MAX_CARDS = 5, MAX_EDGE = 1200, JPEG_Q = 0.82;
+  var MAX_CARDS = 5, JPEG_Q = 0.86;
 
   var DEFAULTS = {
     meta: {
@@ -49,11 +49,11 @@
       { label: 'SHIPPING', value: 'Europe' }
     ],
     /* The three approved cards. `src` is a path for these and a data
-       URL for anything the client chooses. fx/fy centre the crop. */
+       URL for anything the client chooses. */
     cards: [
-      { src: 'assets/story-cards/01-pikachu-felt-hat.jpg', fx: 50, fy: 50, w: 1145, h: 1600 },
-      { src: 'assets/story-cards/02-rayquaza-gold-star.jpg', fx: 50, fy: 50, w: 1145, h: 1600 },
-      { src: 'assets/story-cards/03-pikachu-kimono.jpg', fx: 50, fy: 50, w: 1145, h: 1600 }
+      { src: 'assets/story-cards/01-pikachu-felt-hat.jpg', w: 1145, h: 1600 },
+      { src: 'assets/story-cards/02-rayquaza-gold-star.jpg', w: 1145, h: 1600 },
+      { src: 'assets/story-cards/03-pikachu-kimono.jpg', w: 1145, h: 1600 }
     ],
     /* Every element that carries a colour. The defaults are the print
        palette mapped onto the parts of the story; nothing is a new
@@ -89,8 +89,7 @@
       }
       if (Array.isArray(s.cards)) {
         out.cards = s.cards.slice(0, MAX_CARDS).map(function (c) {
-          return { src: String(c.src || ''), fx: clamp(+c.fx || 50, 0, 100), fy: clamp(+c.fy || 50, 0, 100),
-                   w: +c.w || 0, h: +c.h || 0 };
+          return { src: String(c.src || ''), w: +c.w || 0, h: +c.h || 0 };
         });
       }
     }
@@ -149,7 +148,7 @@
   }
   function addCard() {
     if (state.cards.length >= MAX_CARDS) return null;
-    var c = { src: '', fx: 50, fy: 50, w: 0, h: 0, _id: 'c' + Date.now().toString(36) };
+    var c = { src: '', w: 0, h: 0, _id: 'c' + Date.now().toString(36) };
     state.cards.push(c);
     commit();
     return c;
@@ -171,22 +170,29 @@
     if (silent) persist(); else commit();
   }
 
-  /* Resample a chosen file to something the store can hold and the
-     export can use, then hand back a data URL plus its pixel size. */
+  /* A chosen file is cut to the card's own proportion — 63 x 88,
+     centred — and resampled to a fixed 945 x 1320, so every photo
+     lands on the plate the same way and nothing is stretched. A
+     smaller source is cut at its own size rather than blown up. */
+  var CARD_W = 945, CARD_H = 1320;
   function readImage(file) {
     return new Promise(function (resolve, reject) {
       if (!file || !/^image\//.test(file.type)) { reject(new Error('Dat is geen afbeelding.')); return; }
       var url = URL.createObjectURL(file);
       var img = new Image();
       img.onload = function () {
-        var w = img.naturalWidth, h = img.naturalHeight;
-        var k = Math.min(1, MAX_EDGE / Math.max(w, h));
-        var cw = Math.round(w * k), ch = Math.round(h * k);
+        var w = img.naturalWidth, h = img.naturalHeight, R = CARD_W / CARD_H;
+        /* the largest 63:88 window inside the photo, centred */
+        var sw = w, sh = Math.round(w / R);
+        if (sh > h) { sh = h; sw = Math.round(h * R); }
+        var sx = Math.round((w - sw) / 2), sy = Math.round((h - sh) / 2);
+        var k = Math.min(1, CARD_W / sw);
+        var cw = Math.round(sw * k), ch = Math.round(sh * k);
         var cv = document.createElement('canvas');
         cv.width = cw; cv.height = ch;
         var ctx = cv.getContext('2d');
         ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cw, ch);   /* PNG alpha flattens to white */
-        ctx.drawImage(img, 0, 0, cw, ch);
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, cw, ch);
         URL.revokeObjectURL(url);
         resolve({ src: cv.toDataURL('image/jpeg', JPEG_Q), w: cw, h: ch, origW: w, origH: h });
       };

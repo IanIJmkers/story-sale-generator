@@ -25,7 +25,7 @@
   }
   function replace(id, file) {
     S.readImage(file).then(function (im) {
-      S.updateCard(id, { src: im.src, w: im.origW, h: im.origH, fx: 50, fy: 50 });
+      S.updateCard(id, { src: im.src, w: im.origW, h: im.origH });
       render();
       global.SalePanel.refresh(lastLayout, true);
     }, function (err) { alert(err.message); });

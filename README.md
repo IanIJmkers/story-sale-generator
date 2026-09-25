@@ -26,8 +26,8 @@ HD-export, tekst die kleiner gezet moest worden.
 | Opslaan / Openen | een `.json` met alles erin, ook de foto's |
 | Deel link | een link met tekst, kleuren en indeling — zonder foto's |
 
-Je werk blijft in de browser van dit apparaat bewaard. Foto's worden
-teruggebracht naar 1200 px op de lange zijde.
+Je werk blijft in de browser van dit apparaat bewaard. Elke foto wordt vanzelf op
+kaartformaat gezet: bijgesneden op 63 × 88 uit het midden, op 945 × 1320 px.
 
 ## Hoe de layout werkt
 

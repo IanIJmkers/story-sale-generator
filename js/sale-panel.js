@@ -64,7 +64,6 @@
     var thumb = el('div', { class: 'thumb' + (c.src ? '' : ' empty') });
     if (c.src) thumb.appendChild(el('img', { src: c.src, alt: '' }));
     else thumb.textContent = '?';
-    thumb.style.backgroundPosition = c.fx + '% ' + c.fy + '%';
     thumb.onclick = function () { global.StorySale.pick(c._id); };
 
     var kids = [
@@ -89,12 +88,9 @@
         el('div', { class: 'card-ctl' }, [
           el('button', { class: 'btn ghost wide', style: 'margin-top:0', text: c.src ? 'Andere foto…' : 'Foto kiezen…',
             onclick: function () { global.StorySale.pick(c._id); } }),
-          c.src ? range('Uitsnede ↔', c.fx, 0, 100, 1, function (v) {
-            S.updateCard(c._id, { fx: v }, true); live(draw);
-          }) : null,
-          c.src ? range('Uitsnede ↕', c.fy, 0, 100, 1, function (v) {
-            S.updateCard(c._id, { fy: v }, true); live(draw);
-          }) : null
+          el('p', { class: 'hint', style: 'margin:8px 0 0', text: c.src
+            ? 'Bijgesneden op 63 × 88, uit het midden van de foto.'
+            : 'Een foto wordt vanzelf op kaartformaat gezet.' })
         ])
       ])
     ];
@@ -107,8 +103,8 @@
     var box = el('div', {});
     box.appendChild(el('p', { class: 'hint', text:
       'Klik een kaart op de story om een foto te kiezen, of sleep een foto erop. ' +
-      'Een foto wordt bijgesneden op 63 × 88 — de verhouding van een kaart — en ' +
-      'met de schuiven kies je welk deel je ziet.' }));
+      'Elke foto wordt vanzelf op kaartformaat gezet: bijgesneden op 63 × 88 uit het ' +
+      'midden. Een rechte foto van alleen de kaart komt er dus precies op.' }));
     st.cards.forEach(function (c, i) { box.appendChild(cardRow(c, i, st.cards.length)); });
     box.appendChild(el('button', {
       class: 'btn primary wide', text: '+ Kaart toevoegen',
@@ -303,7 +299,7 @@
     if (portrait.length) {
       out.push(['Liggende foto', 'Kaart ' +
         portrait.map(function (c) { return st.cards.indexOf(c) + 1; }).join(', ') +
-        ' is breder dan hoog en wordt fors bijgesneden. Schuif de uitsnede, of kies een staande foto.', false]);
+        ' is breder dan hoog en is fors bijgesneden. Een staande foto van alleen de kaart past precies.', false]);
     }
 
     if (L) {

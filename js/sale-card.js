@@ -222,8 +222,7 @@
         '<g transform="translate(' + tx + ' ' + ty + ')">' + B.bracket({ len: 30, sw: 2.2, corner: k, color: T.bracket }) + '</g></svg>';
     };
     var img = c.src
-      ? '<img src="' + c.src + '" alt="" style="display:block;width:100%;height:100%;object-fit:cover;object-position:' +
-        c.fx + '% ' + c.fy + '%;position:relative"/>'
+      ? '<img src="' + c.src + '" alt="" style="display:block;width:100%;height:100%;object-fit:cover;object-position:50% 50%;position:relative"/>'
       : '<div style="width:100%;height:100%;border:2px dashed ' + T.plateFrame + ';opacity:.5"></div>';
     return '<div' + dp('plate') + ' data-card="' + c._id + '" style="position:absolute;left:' + px(x) + ';top:' + px(y) +
       ';width:' + px(pw) + ';height:' + px(ph) + ';padding:' + PAD + 'px;box-sizing:border-box;background:' + T.plate +
