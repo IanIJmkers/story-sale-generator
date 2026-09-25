@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Denna’s Trading — Story sale</title>
+<title>Denna’s Trading — Story sale generator</title>
 <link rel="stylesheet" href="css/system.css">
 <link rel="stylesheet" href="css/editor.css">
 </head>
@@ -13,21 +13,21 @@
     <span class="mark">Denna’s Trading</span>
     <span class="tab on">Story sale</span>
     <span class="spacer"></span>
-    <span class="seg" title="Formaat">
+    <span class="seg" title="Format">
       <button class="btn" data-format="story">9:16</button>
       <button class="btn" data-format="post">4:5</button>
     </span>
     <span class="sep"></span>
-    <button class="btn" id="preview">Voorbeeld</button>
+    <button class="btn" id="preview">Preview</button>
     <span class="sep"></span>
-    <button class="btn primary" id="png">PNG downloaden</button>
-    <button class="btn" id="png2x" title="Dubbele resolutie (2160 × 3840) — scherper op Instagram">PNG HD (2×)</button>
+    <button class="btn primary" id="png">Download PNG</button>
+    <button class="btn" id="png2x" title="Double resolution (2160 × 3840) — sharper on Instagram">PNG HD (2×)</button>
     <button class="btn" id="pdf">PDF / print</button>
     <span class="sep"></span>
-    <button class="btn" id="save">Opslaan</button>
-    <button class="btn" id="open">Openen</button>
-    <button class="btn" id="share">Deel link</button>
-    <button class="btn" id="reset">Herstel</button>
+    <button class="btn" id="save">Save</button>
+    <button class="btn" id="open">Open</button>
+    <button class="btn" id="share">Share link</button>
+    <button class="btn" id="reset">Reset</button>
   </header>
   <div class="main">
     <div class="stage"><div class="stage-inner"><div class="page"></div></div></div>
@@ -51,8 +51,8 @@
   Editor.wireBar({
     filename: 'dennas-story-sale.png',
     jsonName: 'dennas-story-sale.json',
-    resetText: 'Alles terugzetten naar de goedgekeurde story? Je eigen foto’s en wijzigingen gaan verloren.',
-    shareNote: 'De link bevat de tekst, kleuren en indeling — niet de foto’s. Gebruik Opslaan voor een bestand mét foto’s.',
+    resetText: 'Reset everything to the approved story? Your own photos and changes will be lost.',
+    shareNote: 'The link carries the text, colours and layout — not the photos. Use Save for a file that includes them.',
     onData: function () { StorySale.render(); }
   });
 </script>

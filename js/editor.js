@@ -114,7 +114,7 @@
     ratio = ratio || 1;
     var page = document.querySelector('.page');
     var label = btn && btn.textContent;
-    if (btn) { btn.disabled = true; btn.textContent = 'Bezig…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Working…'; }
     return withCleanPage(function () {
       return global.htmlToImage.toPng(page, {
         width: PAGE_W, height: PAGE_H, pixelRatio: ratio, cacheBust: false,
@@ -129,8 +129,8 @@
       if (btn) { btn.disabled = false; btn.textContent = label; }
     }).catch(function (err) {
       if (btn) { btn.disabled = false; btn.textContent = label; }
-      alert('Exporteren mislukt: ' + err.message +
-            '\n\nGebruik anders “PDF / Print” — die werkt altijd.');
+      alert('Export failed: ' + err.message +
+            '\n\nUse “PDF / print” instead — that always works.');
     });
   }
 
@@ -150,7 +150,7 @@
       var r = new FileReader();
       r.onload = function () {
         try { Store.fromJSON(r.result); if (onDone) onDone(); }
-        catch (e) { alert('Dit bestand kon niet gelezen worden: ' + e.message); }
+        catch (e) { alert('This file could not be read: ' + e.message); }
       };
       r.readAsText(f);
     };
@@ -159,12 +159,12 @@
   function copyShareLink(btn) {
     var url = Store.shareLink();
     var done = function () {
-      var t = btn.textContent; btn.textContent = 'Gekopieerd ✓';
+      var t = btn.textContent; btn.textContent = 'Copied ✓';
       setTimeout(function () { btn.textContent = t; }, 1600);
     };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(url).then(done, function () { prompt('Kopieer deze link:', url); });
-    } else { prompt('Kopieer deze link:', url); }
+      navigator.clipboard.writeText(url).then(done, function () { prompt('Copy this link:', url); });
+    } else { prompt('Copy this link:', url); }
   }
 
   /* ---------- small DOM helper ---------- */
@@ -197,7 +197,7 @@
       copyShareLink(b);
     };
     if ((b = q('#reset'))) b.onclick = function () {
-      if (confirm(opts.resetText || 'Alles terugzetten naar de originele agenda? Je eigen wijzigingen gaan verloren.')) {
+      if (confirm(opts.resetText || 'Reset everything? Your own changes will be lost.')) {
         Store.reset(); opts.onData();
       }
     };
@@ -211,7 +211,7 @@
     markFormat();
     if ((b = q('#preview'))) b.onclick = function () {
       var on = document.body.classList.toggle('preview');
-      b.textContent = on ? 'Bewerken' : 'Voorbeeld';
+      b.textContent = on ? 'Edit' : 'Preview';
       b.classList.toggle('primary', on);
     };
     global.addEventListener('resize', fitStage);

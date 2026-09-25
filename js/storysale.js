@@ -17,11 +17,21 @@
   var S = global.Store, E = global.Editor, K = global.SaleCard;
   var page = null;
 
+  /* One real file input, kept in the document: a detached input's
+     click() is ignored by some browsers, and a picker that never
+     opens looks exactly like a button that does nothing. */
+  var picker = null;
   function pick(id) {
-    var i = document.createElement('input');
-    i.type = 'file'; i.accept = 'image/*';
-    i.onchange = function () { if (i.files && i.files[0]) replace(id, i.files[0]); };
-    i.click();
+    if (!picker) {
+      picker = document.createElement('input');
+      picker.type = 'file'; picker.accept = 'image/*';
+      picker.className = 'chrome';
+      picker.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
+      document.body.appendChild(picker);
+    }
+    picker.value = '';
+    picker.onchange = function () { if (picker.files && picker.files[0]) replace(id, picker.files[0]); };
+    picker.click();
   }
   function replace(id, file) {
     S.readImage(file).then(function (im) {
@@ -40,8 +50,8 @@
     d.className = 'chrome card-hit' + (c && !c.src ? ' empty' : '');
     d.style.cssText = 'left:' + h.x.toFixed(1) + 'px;top:' + h.y.toFixed(1) + 'px;width:' + h.w.toFixed(1) +
       'px;height:' + h.h.toFixed(1) + 'px;transform:rotate(' + h.rot.toFixed(2) + 'deg);transform-origin:50% 50%';
-    d.title = 'Klik om een foto te kiezen, of sleep er één op';
-    d.innerHTML = '<span class="card-hit-l">' + (c && c.src ? 'Vervang foto' : 'Kies een foto') + '</span>';
+    d.title = 'Click to choose a photo, or drop one here';
+    d.innerHTML = '<span class="card-hit-l">' + (c && c.src ? 'Replace photo' : 'Choose a photo') + '</span>';
     d.onclick = function () { pick(h.id); };
     d.ondragover = function (ev) { ev.preventDefault(); d.classList.add('over'); };
     d.ondragleave = function () { d.classList.remove('over'); };

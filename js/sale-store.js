@@ -125,8 +125,8 @@
          rather than silently losing the next edit. */
       if (!persist.warned) {
         persist.warned = true;
-        alert('De browser kan dit niet meer opslaan (te veel foto’s). ' +
-              'Sla je werk op als bestand met Opslaan.');
+        alert('The browser can no longer store this (too many photos). ' +
+              'Save your work as a file with Save.');
       }
     }
   }
@@ -177,7 +177,7 @@
   var CARD_W = 945, CARD_H = 1320;
   function readImage(file) {
     return new Promise(function (resolve, reject) {
-      if (!file || !/^image\//.test(file.type)) { reject(new Error('Dat is geen afbeelding.')); return; }
+      if (!file || !/^image\//.test(file.type)) { reject(new Error('That is not an image.')); return; }
       var url = URL.createObjectURL(file);
       var img = new Image();
       img.onload = function () {
@@ -196,7 +196,7 @@
         URL.revokeObjectURL(url);
         resolve({ src: cv.toDataURL('image/jpeg', JPEG_Q), w: cw, h: ch, origW: w, origH: h });
       };
-      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Deze afbeelding kon niet gelezen worden.')); };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('This image could not be read.')); };
       img.src = url;
     });
   }
@@ -204,7 +204,7 @@
   /* ---------- terms ---------- */
   function addTerm() {
     if (state.terms.length >= 4) return;
-    state.terms.push({ label: 'LABEL', value: 'Waarde' });
+    state.terms.push({ label: 'LABEL', value: 'Value' });
     commit();
   }
   function removeTerm(i) { state.terms.splice(i, 1); commit(); }

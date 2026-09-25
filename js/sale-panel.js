@@ -20,7 +20,7 @@
   'use strict';
 
   var S = global.Store, E = global.Editor, K = global.SaleCard, el = null;
-  var mount = null, typing = false, lastLayout = null, section = 'kaarten';
+  var mount = null, typing = false, lastLayout = null, section = 'cards';
 
   function init(opts) { el = E.el; mount = document.querySelector(opts.mount); }
   function draw() { return global.StorySale.render(); }
@@ -70,27 +70,27 @@
       el('div', { class: 'show-h' }, [
         el('span', { class: 'num', text: String(i + 1) }),
         el('span', { class: 'stamp' + (c.src ? '' : ' marker'), text:
-          !c.src ? 'Nog geen foto' :
-          (c.w && c.h ? c.w + ' × ' + c.h + ' px' : 'Foto gekozen') +
-          (i === Math.floor(n / 2) ? ' · voorste kaart' : '') }),
-        el('button', { class: 'mini', title: 'Naar links', text: '‹', disabled: i === 0 ? '' : null,
+          !c.src ? 'No photo yet' :
+          (c.w && c.h ? c.w + ' × ' + c.h + ' px' : 'Photo chosen') +
+          (i === Math.floor(n / 2) ? ' · front card' : '') }),
+        el('button', { class: 'mini', title: 'Move left', text: '‹', disabled: i === 0 ? '' : null,
           onclick: function () { S.moveCard(c._id, -1); redrawAll(); } }),
-        el('button', { class: 'mini', title: 'Naar rechts', text: '›', disabled: i === n - 1 ? '' : null,
+        el('button', { class: 'mini', title: 'Move right', text: '›', disabled: i === n - 1 ? '' : null,
           onclick: function () { S.moveCard(c._id, 1); redrawAll(); } }),
-        el('button', { class: 'kill', title: 'Verwijder deze kaart', text: '✕',
+        el('button', { class: 'kill', title: 'Remove this card', text: '✕',
           onclick: function () {
-            if (!confirm('Kaart ' + (i + 1) + ' van de waaier halen?')) return;
+            if (!confirm('Remove card ' + (i + 1) + ' from the fan?')) return;
             S.removeCard(c._id); redrawAll();
           } })
       ]),
       el('div', { class: 'card-body' }, [
         thumb,
         el('div', { class: 'card-ctl' }, [
-          el('button', { class: 'btn ghost wide', style: 'margin-top:0', text: c.src ? 'Andere foto…' : 'Foto kiezen…',
+          el('button', { class: 'btn ghost wide', style: 'margin-top:0', text: c.src ? 'Change photo…' : 'Choose photo…',
             onclick: function () { global.StorySale.pick(c._id); } }),
           el('p', { class: 'hint', style: 'margin:8px 0 0', text: c.src
-            ? 'Bijgesneden op 63 × 88, uit het midden van de foto.'
-            : 'Een foto wordt vanzelf op kaartformaat gezet.' })
+            ? 'Cropped to 63 × 88 from the centre of the photo.'
+            : 'A photo is fitted to the card automatically.' })
         ])
       ])
     ];
@@ -102,12 +102,12 @@
   function kaartenSection(st) {
     var box = el('div', {});
     box.appendChild(el('p', { class: 'hint', text:
-      'Klik een kaart op de story om een foto te kiezen, of sleep een foto erop. ' +
-      'Elke foto wordt vanzelf op kaartformaat gezet: bijgesneden op 63 × 88 uit het ' +
-      'midden. Een rechte foto van alleen de kaart komt er dus precies op.' }));
+      'Click a card on the story to choose a photo, or drop a photo onto it. ' +
+      'Every photo is fitted to the card automatically: cropped to 63 × 88 from the ' +
+      'centre. A straight photo of just the card lands on it exactly.' }));
     st.cards.forEach(function (c, i) { box.appendChild(cardRow(c, i, st.cards.length)); });
     box.appendChild(el('button', {
-      class: 'btn primary wide', text: '+ Kaart toevoegen',
+      class: 'btn primary wide', text: '+ Add card',
       disabled: st.cards.length >= S.MAX_CARDS ? '' : null,
       onclick: function () {
         var c = S.addCard();
@@ -117,18 +117,18 @@
     }));
     if (st.cards.length >= S.MAX_CARDS) {
       box.appendChild(el('p', { class: 'hint', style: 'margin-top:8px', text:
-        'Vijf is het maximum: daarboven wordt elke kaart te klein om op een telefoon te lezen.' }));
+        'Five is the maximum: beyond that every card is too small to read on a phone.' }));
     }
 
-    box.appendChild(el('h3', { text: 'De waaier' }));
-    box.appendChild(range('Spreiding', st.meta.spread, 0.5, 1.4, 0.05, function (v) {
+    box.appendChild(el('h3', { text: 'The fan' }));
+    box.appendChild(range('Spread', st.meta.spread, 0.5, 1.4, 0.05, function (v) {
       S.setPath('meta.spread', v, true); live(draw);
-    }, 'Hoe ver de kaarten uit elkaar staan. Ze blijven altijd binnen de story.'));
-    box.appendChild(range('Kanteling', st.meta.tilt, 0, 2, 0.1, function (v) {
+    }, 'How far apart the cards sit. They always stay inside the story.'));
+    box.appendChild(range('Tilt', st.meta.tilt, 0, 2, 0.1, function (v) {
       S.setPath('meta.tilt', v, true); live(draw);
-    }, 'Hoe schuin de buitenste kaarten staan. 0 is recht.'));
+    }, 'How far the outer cards lean. 0 is straight.'));
     box.appendChild(el('button', {
-      class: 'btn wide ghost', text: 'Terug naar de goedgekeurde waaier',
+      class: 'btn wide ghost', text: 'Back to the approved fan',
       onclick: function () { S.setPath('meta.spread', 1, true); S.setPath('meta.tilt', 1, true); redrawAll(); }
     }));
     return box;
@@ -136,25 +136,25 @@
 
   /* ---------- KLEUREN ---------- */
   var GROUPS = [
-    ['Vlak', [
-      ['bg', 'Achtergrond'], ['pattern', 'Golfpatroon'], ['halo', 'Cirkel achter logo']
+    ['Field', [
+      ['bg', 'Background'], ['pattern', 'Wave pattern'], ['halo', 'Circle behind logo']
     ]],
-    ['De sjerp (hoek en voet)', [
-      ['sashNavy', 'Blauw vlak'], ['sashDeep', 'Blauw, donkere kant'], ['sashGold', 'Gouden rand'],
-      ['sashGap', 'Lichte rand'], ['sashPattern', 'Golfpatroon op blauw']
+    ['The sash (corner and foot)', [
+      ['sashNavy', 'Navy field'], ['sashDeep', 'Navy, dark end'], ['sashGold', 'Gold edge'],
+      ['sashGap', 'Light edge'], ['sashPattern', 'Wave pattern on navy']
     ]],
-    ['Kop', [
-      ['heading', 'Kop (STORY SALE)'], ['headRule', 'Lijntjes naast de kop']
+    ['Heading', [
+      ['heading', 'Heading (STORY SALE)'], ['headRule', 'Rules beside the heading']
     ]],
-    ['De kaarten', [
-      ['plate', 'Plaatje achter de foto'], ['plateFrame', 'Dunne lijn om de foto'], ['bracket', 'Hoekjes voorste kaart']
+    ['The cards', [
+      ['plate', 'Plate behind the photo'], ['plateFrame', 'Thin line around the photo'], ['bracket', 'Corners on front card']
     ]],
-    ['De tekst', [
-      ['lead', 'Grote regels'], ['note', 'Regel eronder'],
-      ['termRule', 'Lijn boven de voorwaarden'], ['termLabel', 'Voorwaarde (links)'], ['termValue', 'Waarde (rechts)']
+    ['The text', [
+      ['lead', 'Big lines'], ['note', 'Line underneath'],
+      ['termRule', 'Rule above the terms'], ['termLabel', 'Term (left)'], ['termValue', 'Value (right)']
     ]],
-    ['Onderaan, op blauw', [
-      ['handle', 'Instagram-naam'], ['region', 'Regio']
+    ['At the foot, on navy', [
+      ['handle', 'Instagram handle'], ['region', 'Region']
     ]]
   ];
 
@@ -195,7 +195,7 @@
         if (!/^#[0-9a-f]{6}$/i.test(v)) { this.value = String(S.load().theme[key]).toUpperCase(); return; }
         dot.value = v; setColour(key, v, this);
       } });
-    var back = el('button', { class: 'undo', title: 'Terug naar de huisstijlkleur', text: '↺',
+    var back = el('button', { class: 'undo', title: 'Back to the brand colour', text: '↺',
       onclick: function () { var d = S.DEFAULTS.theme[key]; dot.value = d; setColour(key, d, hex); paint(lastLayout); } });
     if (String(th[key]).toUpperCase() === S.DEFAULTS.theme[key].toUpperCase()) back.disabled = true;
     var row = el('div', { class: 'crow' }, [el('span', { text: label }), hex, dot, back]);
@@ -206,138 +206,138 @@
   function kleurenSection() {
     var box = el('div', {});
     box.appendChild(el('p', { class: 'hint', text:
-      'Ga met de muis over een regel om te zien welk onderdeel het is. ' +
-      'Met ↺ zet je er één terug, onderaan zet je alles terug.' }));
+      'Hover a row to see which part of the story it paints. ' +
+      '↺ resets one; the button at the bottom resets them all.' }));
     GROUPS.forEach(function (g) {
       box.appendChild(el('h3', { text: g[0] }));
       g[1].forEach(function (r) { box.appendChild(swatch(r[0], r[1])); });
     });
-    box.appendChild(el('button', { class: 'btn wide ghost', text: 'Herstel huisstijlkleuren',
+    box.appendChild(el('button', { class: 'btn wide ghost', text: 'Restore brand colours',
       onclick: function () {
         var th = S.load().theme;
         for (var k in S.DEFAULTS.theme) th[k] = S.DEFAULTS.theme[k];
         S.persist(); redrawAll();
       } }));
     box.appendChild(el('p', { class: 'hint', style: 'margin:10px 0 0', text:
-      'Het logo krijgt geen kleurkeuze: dat is het aangeleverde bestand en dat wordt niet hertint.' }));
+      'The logo has no colour control: it is the supplied file and is never re-tinted.' }));
     return box;
   }
 
   /* ---------- TEKST ---------- */
   function tekstSection(st) {
     var box = el('div', {});
-    box.appendChild(el('h3', { text: 'Kop' }));
-    box.appendChild(textField('Kop', 'meta.heading', st.meta.heading));
+    box.appendChild(el('h3', { text: 'Heading' }));
+    box.appendChild(textField('Heading', 'meta.heading', st.meta.heading));
 
-    box.appendChild(el('h3', { text: 'Grote regels' }));
+    box.appendChild(el('h3', { text: 'Big lines' }));
     st.meta.lead.forEach(function (line, i) {
       var inp = el('input', { type: 'text', value: line, spellcheck: 'false',
         oninput: function () { S.load().meta.lead[i] = this.value; S.persist(); draw(); } });
       var row = el('div', { class: 'pair' }, [
-        field('Regel ' + (i + 1), inp),
-        st.meta.lead.length > 1 ? el('button', { class: 'kill tall', title: 'Regel weghalen', text: '✕',
+        field('Line ' + (i + 1), inp),
+        st.meta.lead.length > 1 ? el('button', { class: 'kill tall', title: 'Remove line', text: '✕',
           onclick: function () { st.meta.lead.splice(i, 1); S.persist(); redrawAll(); } }) : null
       ]);
       box.appendChild(row);
     });
     if (st.meta.lead.length < 3) {
-      box.appendChild(el('button', { class: 'btn ghost wide', text: '+ Regel', style: 'margin-top:0',
+      box.appendChild(el('button', { class: 'btn ghost wide', text: '+ Line', style: 'margin-top:0',
         onclick: function () { st.meta.lead.push(''); S.persist(); redrawAll(); } }));
     }
     box.appendChild(el('p', { class: 'hint', style: 'margin-top:8px', text:
-      'Een regel die te lang is voor de breedte wordt vanzelf kleiner gezet — en Controle zegt het.' }));
+      'A line too long for the width is set smaller automatically — and Checks says so.' }));
 
-    box.appendChild(el('h3', { text: 'Regel eronder' }));
-    box.appendChild(textField('Tekst', 'meta.note', st.meta.note, 'Wordt in kapitalen gezet'));
+    box.appendChild(el('h3', { text: 'Line underneath' }));
+    box.appendChild(textField('Text', 'meta.note', st.meta.note, 'Set in capitals'));
 
-    box.appendChild(el('h3', { text: 'Voorwaarden' }));
+    box.appendChild(el('h3', { text: 'Terms' }));
     st.terms.forEach(function (t, i) {
       var l = el('input', { type: 'text', value: t.label, spellcheck: 'false', class: 'name',
         oninput: function () { t.label = this.value; S.persist(); draw(); } });
       var v = el('input', { type: 'text', value: t.value, spellcheck: 'false',
         oninput: function () { t.value = this.value; S.persist(); draw(); } });
       box.appendChild(el('div', { class: 'pair' }, [
-        field('Links', l), field('Rechts', v),
-        el('button', { class: 'kill tall', title: 'Voorwaarde weghalen', text: '✕',
+        field('Left', l), field('Right', v),
+        el('button', { class: 'kill tall', title: 'Remove term', text: '✕',
           onclick: function () { S.removeTerm(i); redrawAll(); } })
       ]));
     });
     if (st.terms.length < 4) {
-      box.appendChild(el('button', { class: 'btn ghost wide', text: '+ Voorwaarde', style: 'margin-top:0',
+      box.appendChild(el('button', { class: 'btn ghost wide', text: '+ Term', style: 'margin-top:0',
         onclick: function () { S.addTerm(); redrawAll(); } }));
     }
     box.appendChild(el('p', { class: 'hint', style: 'margin-top:8px', text:
-      'Elke voorwaarde erbij haalt ruimte bij de kaarten weg; de tekst blijft op maat.' }));
+      'Every extra term takes depth from the cards; the text always stays on size.' }));
 
-    box.appendChild(el('h3', { text: 'Onderaan' }));
-    box.appendChild(textField('Instagram-naam', 'meta.handle', st.meta.handle));
-    box.appendChild(textField('Regio', 'meta.region', st.meta.region));
+    box.appendChild(el('h3', { text: 'At the foot' }));
+    box.appendChild(textField('Instagram handle', 'meta.handle', st.meta.handle));
+    box.appendChild(textField('Region', 'meta.region', st.meta.region));
     return box;
   }
 
   /* ---------- warnings ---------- */
-  var ON_BG = [['heading', 'Kop'], ['lead', 'Grote regels'], ['note', 'Regel eronder'],
-               ['termLabel', 'Voorwaarde'], ['termValue', 'Waarde']];
-  var ON_NAVY = [['handle', 'Instagram-naam'], ['region', 'Regio']];
+  var ON_BG = [['heading', 'Heading'], ['lead', 'Big lines'], ['note', 'Line underneath'],
+               ['termLabel', 'Term'], ['termValue', 'Value']];
+  var ON_NAVY = [['handle', 'Instagram handle'], ['region', 'Region']];
 
   function warnings(L) {
     var st = S.load(), th = st.theme, F = K.formatOf(st), out = [];
 
     var empty = st.cards.filter(function (c) { return !c.src; }).length;
-    if (!st.cards.length) out.push(['Geen kaarten', 'Er staat geen enkele kaart op de story. Voeg er één toe onder Kaarten.', false]);
-    if (empty) out.push(['Nog geen foto', empty + ' kaart(en) hebben nog geen foto en drukken als leeg plaatje af.', false]);
+    if (!st.cards.length) out.push(['No cards', 'There is no card on the story. Add one under Cards.', false]);
+    if (empty) out.push(['No photo yet', empty + ' card(s) have no photo yet and export as an empty plate.', false]);
 
     /* A card is drawn at up to ~500px tall and exported at 2x, so a
        photo under ~900px tall is being blown up. */
     var soft = st.cards.filter(function (c) { return c.src && c.h && c.h < 900; });
     if (soft.length) {
-      out.push(['Foto aan de kleine kant',
+      out.push(['Photo on the small side',
         soft.map(function (c) { return st.cards.indexOf(c) + 1; }).join(', ') +
-        ': korter dan 900 px. In de HD-export wordt die wazig. Een foto van een kaart is het scherpst op 1200 px of meer.', false]);
+        ': under 900 px tall. It will look soft in the HD export. A card photo is sharpest at 1200 px or more.', false]);
     }
     var portrait = st.cards.filter(function (c) { return c.src && c.w && c.h && c.w > c.h; });
     if (portrait.length) {
-      out.push(['Liggende foto', 'Kaart ' +
+      out.push(['Landscape photo', 'Card ' +
         portrait.map(function (c) { return st.cards.indexOf(c) + 1; }).join(', ') +
-        ' is breder dan hoog en is fors bijgesneden. Een staande foto van alleen de kaart past precies.', false]);
+        ' is wider than tall and has been cropped heavily. A portrait photo of just the card fits exactly.', false]);
     }
 
     if (L) {
       if (L.leadSize < F.lead - 0.5) {
-        out.push(['Grote regel verkleind',
-          'Een regel is te lang voor de breedte en staat op ' + Math.round(L.leadSize) + ' px in plaats van ' +
-          F.lead + '. Korter is groter.', false]);
+        out.push(['Big line reduced',
+          'A line is too long for the width and is set at ' + Math.round(L.leadSize) + ' px instead of ' +
+          F.lead + '. Shorter is bigger.', false]);
       }
       if (L.headerScale < 0.999) {
-        out.push(['Kop ingekrompen', 'Het logo en de kop staan op ' + Math.round(L.headerScale * 100) +
-          '% om de kaarten ruimte te geven. Minder voorwaarden of regels geeft de kop terug.', false]);
+        out.push(['Header reduced', 'The logo and heading are at ' + Math.round(L.headerScale * 100) +
+          '% to give the cards room. Fewer terms or lines give the header back.', false]);
       }
       if (st.cards.length && L.midW < 240) {
-        out.push(['Kaarten klein', 'De voorste kaart is ' + Math.round(L.midW) + ' px breed. ' +
-          (F.key === 'post' ? 'In 4:5 is dat de prijs van 570 px minder hoogte — voor een story is 9:16 groter. ' : '') +
-          'Minder tekst onder de kaarten maakt ze groter.', false]);
+        out.push(['Cards small', 'The front card is ' + Math.round(L.midW) + ' px wide. ' +
+          (F.key === 'post' ? 'In 4:5 that is the price of 570 px less height — for a story, 9:16 is bigger. ' : '') +
+          'Less text under the cards makes them bigger.', false]);
       }
     }
 
     var weak = ON_BG.filter(function (p) { return ratio(th[p[0]], th.bg) < 4.5; });
     if (weak.length) {
-      out.push(['Te weinig contrast', weak.map(function (p) {
+      out.push(['Low contrast', weak.map(function (p) {
         return p[1] + ' (' + ratio(th[p[0]], th.bg).toFixed(1) + ':1)';
-      }).join(', ') + ' — onder 4,5:1 tegen de achtergrond.', false]);
+      }).join(', ') + ' — under 4.5:1 against the background.', false]);
     }
     var weakN = ON_NAVY.filter(function (p) { return ratio(th[p[0]], th.sashNavy) < 4.5; });
     if (weakN.length) {
-      out.push(['Te weinig contrast op blauw', weakN.map(function (p) {
+      out.push(['Low contrast on navy', weakN.map(function (p) {
         return p[1] + ' (' + ratio(th[p[0]], th.sashNavy).toFixed(1) + ':1)';
-      }).join(', ') + ' — onder 4,5:1 tegen de sjerp.', false]);
+      }).join(', ') + ' — under 4.5:1 against the sash.', false]);
     }
     var LOGO_INK = '#1B3A5C';
     if (ratio(LOGO_INK, th.bg) < 3) {
-      out.push(['Logo valt weg', 'Het logo is aangeleverd in donkerblauwe inkt en mag niet hertint worden. ' +
-        'Tegen deze achtergrond is dat ' + ratio(LOGO_INK, th.bg).toFixed(1) + ':1.', false]);
+      out.push(['Logo disappears', 'The logo is supplied in navy ink and may not be re-tinted. ' +
+        'Against this background that is ' + ratio(LOGO_INK, th.bg).toFixed(1) + ':1.', false]);
     }
 
-    if (!out.length) out.push(['In orde', 'Alles staat binnen de veilige zone en leest van een afstandje.', true]);
+    if (!out.length) out.push(['All good', 'Everything sits inside the safe zone and reads at arm’s length.', true]);
     return out;
   }
   function paintWarnings(L) {
@@ -352,7 +352,7 @@
   }
 
   /* ---------- assembly ---------- */
-  var TABS = [['kaarten', 'Kaarten'], ['kleuren', 'Kleuren'], ['tekst', 'Tekst']];
+  var TABS = [['cards', 'Cards'], ['colours', 'Colours'], ['text', 'Text']];
 
   function paint(L) {
     var st = S.load();
@@ -363,11 +363,11 @@
         onclick: function () { section = t[0]; paint(lastLayout); } }));
     });
     mount.appendChild(nav);
-    mount.appendChild(section === 'kleuren' ? kleurenSection() :
-                      section === 'tekst' ? tekstSection(st) : kaartenSection(st));
+    mount.appendChild(section === 'colours' ? kleurenSection() :
+                      section === 'text' ? tekstSection(st) : kaartenSection(st));
     var box = el('div', {});
     box.setAttribute('data-warnings', '1');
-    mount.appendChild(el('h2', { text: 'Controle' }));
+    mount.appendChild(el('h2', { text: 'Checks' }));
     mount.appendChild(box);
     paintWarnings(L);
 
